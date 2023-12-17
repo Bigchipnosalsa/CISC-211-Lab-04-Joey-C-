@@ -37,3 +37,5 @@
 # added by VB
 *.elf
 *.hex
+/Lab-04-starter/firmware/Lab-04-starter.X/build/
+/Lab-04-starter/firmware/Lab-04-starter.X/dist/

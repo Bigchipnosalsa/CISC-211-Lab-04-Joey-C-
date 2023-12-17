@@ -64,10 +64,94 @@ asmFunc:
     LDR r2,[r1]
     ADD r0,r0,r2
 .endif
-    
-    /*** STUDENTS: Place your code BELOW this line!!! **************/
 
-    
+    /*** STUDENTS: Place your code BELOW this line!!! **************/
+   /*constant variable*/
+   MOV r3,0
+    /*initialize all variables/labels to 0 */
+   LDR r1, =transaction
+   STR r3, [r1]
+   LDR r1, =eat_out
+   STR r3, [r1]
+   LDR r1, =stay_in
+   STR r3, [r1]
+   LDR r1, =eat_ice_cream
+   STR r3, [r1]
+   LDR r1, =we_have_a_problem
+   STR r3, [r1]
+   
+   /*input transaction value passed bc c code in r0 loaded to transaction label mem location*/
+   LDR r1, =transaction
+   /*copying passed value into memory location pointed to by transaction*/
+   STR r0, [r1]
+   
+   LDR R2, =1000
+   CMP r0, r2
+   /*test if >1000  signed since negatives are possibilities
+   branch activated if Z = 0 and N = V */
+   BGT out_of_range
+   
+   /*bring immediate value to a register so we can use it in instructions*/
+   LDR r2, =-1000
+   /*CMP updates condition flags based on result and discards result*/
+   CMP r0,r2
+   /* branches if N is not = V, i.e N=1, V=0 vice versa */
+   BLT out_of_range
+   
+   
+   /*if niether branch is tripped then amount is in accceptable range */
+   LDR r4, =balance
+   LDR r6,[r4]
+   /*add balance and transaction. R3 will now be out tmpBalance*/
+   ADDS r3,r0,r6
+   BVS out_of_range
+   BVC no_overflow_a
+   
+   no_overflow_a:
+   /*balance value @ mem location r4 replaced with tmpbalance held at r3 (since registers were not updated)*/
+   STR r3,[r4]
+   MOV r7,0
+   /*branch based on conditional, is balance(r6) greater or less than 0? */
+   CMP r6,r7
+   BGT update_eat_out
+   BLT update_stay_in
+   
+   MOV r3, 1
+   LDR r1, =eat_ice_cream
+   STR r3, [r1]
+   LDR r4, = balance
+   LDR r0, [r4]
+   b done 
+   
+   out_of_range:
+   MOV r3,0
+   LDR r6, =transaction
+   STR r3, [r6]
+   MOV r3,1
+   LDR r4, =we_have_a_problem
+   STR r3, [r4]
+   LDR r5, =balance
+   LDR r0, [r5]
+   /*updates passed value in r0, now equals vaue held at balance label*/
+   b done
+   
+      /* constant of 1 replaces the variable value eat_out it balance > 0 */
+   update_eat_out:
+   MOV r3, 1
+   LDR r1, =eat_out
+   STR r3, [r1]
+   LDR r4, = balance
+   LDR r0, [r4]
+   b done
+   
+      /* constant of 1 replaces the variable value stay_in it balance > 0 */
+   update_stay_in:
+   MOV r3, 1
+   LDR r1, =stay_in
+   STR r3, [r1]
+   LDR r4, = balance
+   LDR r0, [r4]
+   b done
     /*** STUDENTS: Place your code ABOVE this line!!! **************/
 
 done:    
